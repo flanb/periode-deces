@@ -4,6 +4,7 @@ import sources from './sources.json'
 import Fan from 'components/Fan.js'
 import Computer from 'components/Computer/index.js'
 import { BackSide, Mesh, MeshBasicMaterial } from 'three'
+import Phone from '@/webgl/components/Phone/Phone'
 
 export default class Main {
 	constructor() {
@@ -43,6 +44,8 @@ export default class Main {
 		this.fanRight1.mesh.position.z = 5
 
 		this.computer = new Computer()
+		this.phone = new Phone()
+		this.tasks.push(this.phone)
 		// this.tasks.push(this.computer)
 	}
 

@@ -6,7 +6,7 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import addObjectDebug from '@/webgl/utils/addObjectDebug'
 import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 
-export default class Cube {
+export default class Computer {
 	constructor(_position = new Vector3(0, 0, 0)) {
 		this.experience = new Experience()
 		this.scene = this.experience.scene
@@ -97,7 +97,6 @@ export default class Cube {
 	setScreenPoint() {
 		const screenPoint = new Mesh(new BoxGeometry(0.1, 0.1, 0.1), new MeshBasicMaterial({ color: 0xff0000 }));
 		screenPoint.position.set(-0.03, 2.17, 0.38);
-		screenPoint.rotation.y = Math.PI;
 
 		this.scene.add(screenPoint);
 

@@ -23,7 +23,7 @@ export default class AudioManager {
 			 */
 			this.audios = {
 				foxPositional: {
-					buffer: this.resources.items.foxAudio,
+					buffer: this.resources.items.talkingAudio,
 					refDistance: 20,
 					loop: false,
 					volume: 1,
@@ -31,7 +31,7 @@ export default class AudioManager {
 					autoplay: false,
 				},
 				fox: {
-					buffer: this.resources.items.foxAudio,
+					buffer: this.resources.items.talkingAudio,
 					loop: false,
 					volume: 1,
 					autoplay: false,

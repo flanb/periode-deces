@@ -34,8 +34,8 @@
 		"path": "models/Fox/glTF/Fox.gltf"
 	},
 	{
-		"name": "foxAudio",
+		"name": "talkingAudio",
 		"type": "audio",
-		"path": "audio/fox.mp3"
+		"path": "/audio/phone/talking.mp3"
 	}
 ]

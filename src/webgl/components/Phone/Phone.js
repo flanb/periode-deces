@@ -15,11 +15,12 @@ export default class Phone extends EventEmitter {
 	 *
 	 * @param {'left' | 'right'} _side
 	 */
-	constructor({ duration = 10, side = 'right' } = {}) {
+	constructor({ duration = 10, side = 'left' } = {}) {
 		super()
 
 		this.experience = new Experience()
 		this.scene = this.experience.scene
+		this.activeScene = this.experience.activeScene
 		this.camera = this.experience.camera.instance
 		this.resources = this.scene.resources
 		this.debug = this.experience.debug
@@ -39,13 +40,13 @@ export default class Phone extends EventEmitter {
 	}
 
 	_setModel() {
-		this.model = this.resources.items.phoneModel.scene
-		this.model.name = 'phone'
-		// this.model.position.x += 1.2
-		// this.model.position.y += 1
-		// this.model.position.z += 5
+		this.scene.traverse((child) => {
+			if (child.name === 'tel') {
+				this.telModel = child
+				return this.mesh
+			}
+		})
 
-		this.telModel = this.model.children.find(({ name }) => name === 'tel')
 		this.baseTalValues = {
 			rotation: this.telModel.rotation.clone(),
 			position: this.telModel.position.clone(),
@@ -54,8 +55,6 @@ export default class Phone extends EventEmitter {
 		this._setAnswerAnim()
 		this._setResetAnim()
 		this.pickMe()
-
-		this.scene.add(this.model)
 	}
 
 	/**
@@ -65,7 +64,6 @@ export default class Phone extends EventEmitter {
 		this.shakeAnim.play()
 		this.calling.volume = CALL.VOLUMES.CALLING
 		this.calling.play()
-		this.playTask()
 
 		this.outCall = setTimeout(() => {
 			this.shakeAnim.pause()
@@ -84,8 +82,8 @@ export default class Phone extends EventEmitter {
 	/**
 	 * @param {'left' | 'right'} side
 	 */
-	playTask() {
-		this.axis.on('down:' + this.side, this._handlePlayTask.bind(this))
+	playTask(side = 'left') {
+		this.axis.on('down:' + side, this._handlePlayTask.bind(this))
 	}
 
 	_handlePlayTask(e) {
