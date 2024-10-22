@@ -1,8 +1,10 @@
 import Experience from 'core/Experience.js'
 import { MeshBasicMaterial } from 'three'
+import Component from 'core/Component.js'
 
-export default class Background {
+export default class Background extends Component {
 	constructor() {
+		super()
 		this.experience = new Experience()
 		this.scene = this.experience.scene
 		this.debug = this.experience.debug
@@ -30,6 +32,6 @@ export default class Background {
 			}
 		})
 		this.mesh.name = 'background'
-		this.scene.add(this.mesh)
+		this.add(this.mesh)
 	}
 }

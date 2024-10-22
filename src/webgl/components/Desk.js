@@ -1,9 +1,11 @@
 import Experience from 'core/Experience.js'
 import { MeshBasicMaterial, PlaneGeometry, Mesh } from 'three'
 import addObjectDebug from '../utils/addObjectDebug'
+import Component from 'core/Component.js'
 
-export default class Desk {
+export default class Desk extends Component {
 	constructor() {
+		super()
 		this.experience = new Experience()
 		this.scene = this.experience.scene
 		this.debug = this.experience.debug
@@ -31,7 +33,7 @@ export default class Desk {
 			}
 		})
 		this.mesh.name = 'background'
-		this.scene.add(this.mesh)
+		this.add(this.mesh)
 	}
 
 	_createPostIts() {
@@ -41,14 +43,14 @@ export default class Desk {
 		const postIt1 = new Mesh(geometry, material1)
 		let scale = 0.3
 		postIt1.scale.set(scale, scale, scale)
-		postIt1.position.set(-1.15, 1.7, -1.)
+		postIt1.position.set(-1.15, 1.7, -1)
 		postIt1.rotation.set(-0.2, 0, -0.2)
 		this.scene.add(postIt1)
 
 		const texture2 = this.scene.resources.items.postItWolfTexture
 		const material2 = new MeshBasicMaterial({ map: texture2 })
 		const postIt2 = new Mesh(geometry, material2)
-		postIt2.position.set(1.7, 1.7, -1.)
+		postIt2.position.set(1.7, 1.7, -1)
 		postIt2.rotation.set(-0.2, 0, 0.2)
 		scale = 0.4
 		postIt2.scale.set(scale, scale, scale)

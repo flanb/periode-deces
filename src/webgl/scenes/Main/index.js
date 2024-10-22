@@ -52,7 +52,9 @@ export default class Main {
 
 	_createSceneComponents() {
 		this.background = new Background()
+		this.scene.add(this.background)
 		this.desk = new Desk()
+		this.scene.add(this.desk)
 
 		this.head = new Head()
 		this.scene.add(this.head)
