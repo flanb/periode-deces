@@ -3,7 +3,7 @@ import Resources from 'core/Resources.js'
 import sources from './sources.json'
 import Fan from 'components/Fan.js'
 import Computer from 'components/Computer/index.js'
-import { BackSide, MeshBasicMaterial } from 'three'
+import { BackSide, Color, MeshBasicMaterial } from 'three'
 import Background from 'components/Background.js'
 import Phone from 'components/Phone/Phone.js'
 import Desk from 'components/Desk.js'
@@ -148,6 +148,7 @@ export default class Main {
 				const outlineMesh = clonedMeshes[leftIndexSelection]
 				if (!selectedTask.isShowed) {
 					// material red and return to original
+					selectMaterials.left.color = new Color('orange')
 					gsap.to(selectMaterials.left.color, {
 						r: 1,
 						g: 0,
@@ -216,6 +217,7 @@ export default class Main {
 				const outlineMesh = clonedMeshes[rightIndexSelection]
 				if (!selectedTask.isShowed) {
 					// material red and return to original
+					selectMaterials.right.color = new Color('violet')
 					gsap.to(selectMaterials.right.color, {
 						r: 1,
 						g: 0,
