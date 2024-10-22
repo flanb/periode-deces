@@ -16,16 +16,16 @@ import addObjectDebug from '@/webgl/utils/addObjectDebug'
 import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
 import Graph from './activities/Graph'
 import EventEmitter from 'core/EventEmitter.js'
+import Component from 'core/Component.js'
 
-export default class Computer extends EventEmitter {
-	constructor(_position = new Vector3(0, 0, 0)) {
+export default class Computer extends Component {
+	constructor() {
 		super()
 		this.experience = new Experience()
 		this.scene = this.experience.scene
 		this.debug = this.experience.debug
 		this.camera = this.experience.camera // Get the camera for projection
 		this.resources = this.scene.resources
-		this.position = _position
 
 		this.css3dRenderer = this.setCss3dRenderer()
 		this.css3dScene = this.setCss3dScene()
@@ -94,8 +94,8 @@ export default class Computer extends EventEmitter {
 			}
 		})
 
-		this.scene.add(this.backgroundMesh)
-		this.scene.add(this.mesh)
+		this.add(this.backgroundMesh)
+		this.add(this.mesh)
 
 		return this.mesh
 	}

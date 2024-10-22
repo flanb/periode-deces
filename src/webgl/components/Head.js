@@ -1,8 +1,9 @@
 import Experience from 'core/Experience.js'
 import gsap from 'gsap'
 import EventEmitter from 'core/EventEmitter.js'
+import Component from 'core/Component.js'
 
-export default class Head extends EventEmitter {
+export default class Head extends Component {
 	constructor() {
 		super()
 		this.experience = new Experience()
@@ -21,7 +22,7 @@ export default class Head extends EventEmitter {
 		this.mesh.scale.set(2, 2, 2)
 
 		this.mesh.name = 'head'
-		this.scene.add(this.mesh)
+		this.add(this.mesh)
 	}
 
 	playTask() {

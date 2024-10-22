@@ -2,6 +2,7 @@ import EventEmitter from '@/webgl/core/EventEmitter'
 import Experience from 'core/Experience.js'
 import { gsap } from 'gsap'
 import { MeshBasicMaterial, Vector2 } from 'three'
+import Component from 'core/Component.js'
 
 const CALL = {
 	DURATION: 4, // seconds
@@ -10,7 +11,7 @@ const CALL = {
 		TALKING: 1,
 	},
 }
-export default class Phone extends EventEmitter {
+export default class Phone extends Component {
 	/**
 	 *
 	 * @param {'left' | 'right'} _side
@@ -72,8 +73,8 @@ export default class Phone extends EventEmitter {
 			}
 		})
 
-		this.scene.add(this.backgroundMesh)
-		this.scene.add(this.mesh)
+		this.add(this.backgroundMesh)
+		this.add(this.mesh)
 	}
 
 	/**

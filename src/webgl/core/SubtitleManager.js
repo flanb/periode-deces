@@ -35,7 +35,7 @@ export class SubtitleManager extends EventEmitter {
 					this.typeAudio.play()
 				},
 			},
-			visibility: 'visible',
+			autoAlpha: 1,
 			onComplete: () => {
 				this._nextElement.style.opacity = '1'
 				if (this.currentSubtitle.success) {
@@ -86,6 +86,7 @@ export class SubtitleManager extends EventEmitter {
 		}
 
 		const handleDown = (event) => {
+			if (event.key === 'a') return
 			const firstChild = this._qteElement.children[index]
 			const keyMap = {
 				x: 'x',

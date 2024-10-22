@@ -55,15 +55,19 @@ export default class Main {
 		this.desk = new Desk()
 
 		this.head = new Head()
+		this.scene.add(this.head)
 		this.focusTasks.push(this.head)
 
 		this.fan = new Fan()
+		this.scene.add(this.fan)
 		this.tasks.push(this.fan)
 
 		this.computer = new Computer()
+		this.scene.add(this.computer)
 		this.tasks.push(this.computer)
 
 		this.phone = new Phone()
+		this.scene.add(this.phone)
 		this.tasks.push(this.phone)
 	}
 
