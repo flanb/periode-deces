@@ -3,6 +3,8 @@ import { CustomToneMapping, NoToneMapping, ShaderChunk, WebGLRenderer } from 'th
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 
+const DOWN_SCALE = 2
+
 export default class Renderer {
 	constructor() {
 		this.experience = new Experience()
@@ -26,7 +28,7 @@ export default class Renderer {
 		// this.instance.shadowMap.enabled = true
 		// this.instance.shadowMap.type = PCFSoftShadowMap
 		this.instance.setClearColor('#211d20')
-		this.instance.setSize(this.sizes.width, this.sizes.height)
+		this.instance.setSize(this.sizes.width / DOWN_SCALE, this.sizes.height / DOWN_SCALE)
 		this.instance.setPixelRatio(Math.min(this.sizes.pixelRatio, 2))
 	}
 
@@ -53,7 +55,7 @@ export default class Renderer {
 
       return color;
     }
-  `,
+  `
 		)
 	}
 

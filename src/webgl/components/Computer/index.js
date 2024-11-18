@@ -26,6 +26,7 @@ export default class Computer extends Component {
 		this.debug = this.experience.debug
 		this.camera = this.experience.camera // Get the camera for projection
 		this.resources = this.scene.resources
+		this.sizes = this.experience.sizes
 
 		this.css3dRenderer = this.setCss3dRenderer()
 		this.css3dScene = this.setCss3dScene()
@@ -48,6 +49,8 @@ export default class Computer extends Component {
 			this.trigger('task:complete')
 			this.isPlaying = false
 		})
+
+		this.sizes.on('resize', this.resize.bind(this))
 	}
 
 	showTask() {
@@ -102,7 +105,7 @@ export default class Computer extends Component {
 
 	setCss3dRenderer() {
 		const renderer = new CSS3DRenderer()
-		renderer.setSize(window.innerWidth, window.innerHeight)
+		renderer.setSize(this.experience.sizes.width, this.experience.sizes.height)
 		renderer.domElement.style.position = 'absolute'
 		renderer.domElement.style.top = 0
 		renderer.domElement.style.pointerEvents = 'none'
@@ -161,5 +164,9 @@ export default class Computer extends Component {
 		if (this.debug.active) {
 			addObjectDebug(this.debug.ui, this.screenPoint, { title: 'Cube' })
 		}
+	}
+
+	resize() {
+		this.css3dRenderer.setSize(this.experience.sizes.width, this.experience.sizes.height)
 	}
 }
