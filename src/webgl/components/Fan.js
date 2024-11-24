@@ -1,13 +1,14 @@
 import Experience from 'core/Experience.js'
-import { MeshBasicMaterial, Vector2 } from 'three'
+import { MeshBasicMaterial } from 'three'
 import { lerp } from 'three/src/math/MathUtils.js'
-import EventEmitter from '../core/EventEmitter'
 import Component from '../core/Component'
 import { gsap } from 'gsap'
 
 const SETTINGS = {
 	TURNS: 4,
 }
+
+let helixDirection = 0
 export default class Fan extends Component {
 	constructor() {
 		super()
@@ -19,6 +20,7 @@ export default class Fan extends Component {
 		this._createMesh()
 
 		this.targetRotation = 0
+		this._createListeners()
 	}
 
 	_createMaterial() {
@@ -26,7 +28,6 @@ export default class Fan extends Component {
 		// texture.flipY = false
 		// texture.channels = 1
 		this._material = new MeshBasicMaterial({ map: texture })
-
 		this._witnessMaterial = new MeshBasicMaterial({ map: texture })
 	}
 
@@ -61,53 +62,84 @@ export default class Fan extends Component {
 		// addObjectDebug(this.debug.ui, this.mesh)
 	}
 
-	/**
-	 * @param {'left' | 'right'} side
-	 */
-	playTask(side = 'left') {
-		this.isPlaying = true
-		this.showTaskTl?.kill()
-		this.witness.material.color.set(0xffffff)
+	_handleHelixMouseEnter = () => {
+		if (!this.isPlaying) return
+		this.experience.canvas.style.cursor = 'grab'
+	}
 
-		let lastAngle = new Vector2()
+	_handleHelixMouseLeave = () => {
+		this.experience.canvas.style.cursor = ''
+	}
 
-		const handleMove = (event) => {
-			const distanceFromCenter = event.position.distanceTo(new Vector2())
-			const angle = event.position.angle()
-			const angleDelta = angle - lastAngle
+	_handleHelixMouseDown = () => {
+		if (!this.isPlaying) return
+		this.experience.canvas.style.cursor = 'grabbing'
+	}
 
-			if (distanceFromCenter > 0.75 && angleDelta > 0 && angleDelta < 1) {
-				this.targetRotation += angleDelta
-			}
-			lastAngle = angle
+	_handleHelixDrag = (event) => {
+		if (!this.isPlaying) return
+		const deltaX = event.mouseEvent.movementX
+		const deltaY = event.mouseEvent.movementY
+		const angleDelta = Math.abs(deltaX) * 0.015 + Math.abs(deltaY) * 0.015
 
-			if (this.targetRotation >= Math.PI * 2 * SETTINGS.TURNS) {
-				this.trigger('task:complete')
-				this.isPlaying = false
-				this.experience.axis.off(`joystick:move:${side}`, handleMove)
-
-				this.targetRotation = Math.PI * 2 * SETTINGS.TURNS
-
-				setTimeout(() => {
-					this.targetRotation = 0
-					this.helix.rotation.x = 0
-				}, 1000)
-			}
+		if (deltaX < 0 && helixDirection === 0) {
+			helixDirection = -1
 		}
+		if (deltaX > 0 && helixDirection === 0) {
+			helixDirection = 1
+		}
+		this.targetRotation += angleDelta * helixDirection
 
-		this.experience.axis.on(`joystick:move:${side}`, handleMove)
+		if (Math.abs(this.targetRotation) > Math.PI * 2 * SETTINGS.TURNS) {
+			this.showTaskTl?.kill()
+			this.witness.material.color.set(0xffffff)
+			this.isPlaying = false
+			this.isShowed = false
+			helixDirection = 0
+
+			setTimeout(() => {
+				this.targetRotation %= Math.PI * 2
+				this.helix.rotation.x = -this.targetRotation
+			}, 1000)
+
+			this.trigger('task:complete')
+		}
+	}
+
+	_createListeners() {
+		this.experience.interactionManager.addInteractiveObject(this.helix)
+		this.helix.addEventListener('mouseenter', this._handleHelixMouseEnter)
+		this.helix.addEventListener('mouseleave', this._handleHelixMouseLeave)
+		this.helix.addEventListener('mousedown', this._handleHelixMouseDown)
+		this.helix.addEventListener('drag', this._handleHelixDrag)
+	}
+
+	playTask() {
+		this.isPlaying = true
 	}
 
 	showTask() {
+		this.isShowed = true
 		this.showTaskTl = gsap.to(this.witness.material.color, {
 			r: 100,
 			duration: 0.5,
 			repeat: -1,
 			yoyo: true,
 		})
+		this.playTask()
 	}
 
 	update() {
 		this.helix.rotation.x = lerp(this.helix.rotation.x, -this.targetRotation, 0.01 * this.experience.time.delta)
+		// console.log(this.helix.rotation.x)
+	}
+
+	dispose() {
+		this.helix.removeEventListener('mouseenter', this._handleHelixMouseEnter)
+		this.helix.removeEventListener('mouseleave', this._handleHelixMouseLeave)
+		this.helix.removeEventListener('mousedown', this._handleHelixMouseDown)
+		this.helix.removeEventListener('drag', this._handleHelixDrag)
+		this.experience.interactionManager.removeInteractiveObject(this.helix)
+		this.showTaskTl?.kill()
 	}
 }

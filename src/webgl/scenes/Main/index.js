@@ -24,7 +24,6 @@ export default class Main {
 
 		this.scene.resources.on('ready', () => {
 			this._start()
-			this._addEventListeners()
 		})
 	}
 
@@ -34,6 +33,7 @@ export default class Main {
 		this._gameOverElement = document.getElementById('game-over')
 
 		this._createSceneComponents()
+		this._randomTasks()
 	}
 
 	_reset() {
@@ -66,29 +66,29 @@ export default class Main {
 
 		this.computer = new Computer()
 		this.scene.add(this.computer)
-		this.tasks.push(this.computer)
+		// this.tasks.push(this.computer)
 
 		this.phone = new Phone()
 		this.scene.add(this.phone)
-		this.tasks.push(this.phone)
+		// this.tasks.push(this.phone)
 	}
 
-	_randomTasks(timeout = 10000) {
+	_randomTasks(timeout = 5000) {
 		setInterval(() => {
 			const randomIndex = Math.floor(Math.random() * this.tasks.length)
 			const randomTask = this.tasks[randomIndex]
+
 			if (randomTask.isPlaying || randomTask.isShowed) return
 			randomTask.showTask()
-			randomTask.isShowed = true
 		}, timeout)
 	}
 
-	_randomFocusTasks(timeout = 30000) {
+	_randomFocusTasks = (timeout = 30000) => {
 		let randomTask
 		const repeat = () => {
 			if (this.tasks.find((task) => task.mesh.name === 'phone').isPlaying) {
 				//prevent subtitle conflict
-				setTimeout(this._randomFocusTasks.bind(this), timeout)
+				setTimeout(this._randomFocusTasks, timeout)
 				return
 			}
 			const randomIndex = Math.floor(Math.random() * this.focusTasks.length)
@@ -98,7 +98,6 @@ export default class Main {
 			this.rightSelectionMode = false
 			randomTask.on('task:complete', handleComplete)
 		}
-		setTimeout(repeat, timeout)
 
 		const handleComplete = () => {
 			setTimeout(repeat, timeout)
@@ -106,6 +105,7 @@ export default class Main {
 			this.rightSelectionMode = true
 			randomTask.off('task:complete', handleComplete)
 		}
+		setTimeout(repeat, timeout)
 	}
 
 	_selectionBehavior() {
@@ -141,7 +141,7 @@ export default class Main {
 			}
 		})
 		//select task
-		this.experience.axis.on(`down:left`, (event) => {
+		this.experience.axis.on('down:left', (event) => {
 			if (!this.leftSelectionMode) return
 			if (event.key === 'a') {
 				const selectedTask = this.tasks[leftIndexSelection]
@@ -173,7 +173,7 @@ export default class Main {
 		})
 
 		// move selection
-		this.experience.axis.on(`joystick:quickmove:left`, (event) => {
+		this.experience.axis.on('joystick:quickmove:left', (event) => {
 			if (event.direction === 'up' || event.direction === 'down') return
 			if (!this.leftSelectionMode) return
 
@@ -281,10 +281,10 @@ export default class Main {
 				ease: 'sine.inOut',
 				onComplete: () => {
 					this._randomTasks()
-					this._randomFocusTasks()
+					// this._randomFocusTasks()
 				},
 			},
-			1,
+			1
 		)
 	}
 
@@ -303,29 +303,6 @@ export default class Main {
 				})
 			},
 		})
-	}
-
-	_handleAxisDown(e) {
-		if (e.key === 'a' && !this._isGameStarted) {
-			this._selectionBehavior()
-			this._playStartAnimation()
-
-			this._isGameStarted = true
-		}
-
-		if (e.key === 'w' && this._isGameStarted) {
-			this._playGameOverAnimation()
-			this._isGameOver = true
-		}
-
-		if (e.key === 'a' && this._isGameOver) {
-			window.location.reload()
-			// this._reset() //TODO:/ do a clean reset
-		}
-	}
-
-	_addEventListeners() {
-		this.axis.on('down', this._handleAxisDown.bind(this))
 	}
 
 	update() {

@@ -253,6 +253,8 @@ body {
 }
 
 .start-menu {
+	display: none;
+	visibility: hidden;
 	pointer-events: none;
 	background-color: #150f00c8;
 	position: fixed;
