@@ -49,16 +49,7 @@ export default class Fan extends Component {
 		})
 		this.mesh.name = 'fan'
 
-		this.scene.resources.items.taskBackgrounds.scene.traverse((child) => {
-			if (child.name.includes('fan')) {
-				this.backgroundMesh = child
-				this.backgroundMesh.material = new MeshBasicMaterial({ color: 0x000000 })
-				this.backgroundMesh.visible = false
-			}
-		})
-
 		this.add(this.mesh)
-		this.add(this.backgroundMesh)
 		// addObjectDebug(this.debug.ui, this.mesh)
 	}
 

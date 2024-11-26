@@ -64,15 +64,6 @@ export default class Phone extends Component {
 		this._setAnswerAnim()
 		this._setResetAnim()
 
-		this.scene.resources.items.taskBackgrounds.scene.traverse((child) => {
-			if (child.name.includes('phone')) {
-				this.backgroundMesh = child
-				this.backgroundMesh.material = new MeshBasicMaterial({ color: 0x000000 })
-				this.backgroundMesh.visible = false
-			}
-		})
-
-		this.add(this.backgroundMesh)
 		this.add(this.mesh)
 	}
 

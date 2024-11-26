@@ -1,22 +1,10 @@
-import Experience from 'core/Experience.js'
-import fragmentShader from './fragment.glsl'
-import vertexShader from './vertex.glsl'
-import {
-	BoxGeometry,
-	Mesh,
-	Scene,
-	ShaderMaterial,
-	MeshNormalMaterial,
-	Vector3,
-	Object3D,
-	MeshBasicMaterial,
-} from 'three'
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls'
 import addObjectDebug from '@/webgl/utils/addObjectDebug'
-import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
-import Graph from './activities/Graph'
-import EventEmitter from 'core/EventEmitter.js'
 import Component from 'core/Component.js'
+import Experience from 'core/Experience.js'
+import { gsap } from 'gsap'
+import { BoxGeometry, Mesh, MeshBasicMaterial, Scene, Vector3 } from 'three'
+import { CSS3DObject, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
+import Graph from './activities/Graph'
 
 export default class Computer extends Component {
 	constructor() {
@@ -61,6 +49,31 @@ export default class Computer extends Component {
 		this.mesh.addEventListener('click', this._handleMouseClick)
 		this.mesh.addEventListener('mouseenter', this._handleMouseEnter)
 		this.mesh.addEventListener('mouseleave', this._handleMouseLeave)
+
+		addEventListener('keydown', this._handleKeyDown)
+		addEventListener('keyup', this._handleKeyUp)
+	}
+
+	_handleKeyDown = (event) => {
+		if (event.repeat) return
+
+		const key = this.keysMap.get(event.code)
+		if (key) {
+			gsap.to(key.position, {
+				duration: 0.1,
+				y: -0.01,
+			})
+		}
+	}
+
+	_handleKeyUp = (event) => {
+		const key = this.keysMap.get(event.code)
+		if (key) {
+			gsap.to(key.position, {
+				duration: 0.1,
+				y: 0.01,
+			})
+		}
 	}
 
 	_handleMouseClick = () => {
@@ -113,17 +126,10 @@ export default class Computer extends Component {
 			if (child.isMesh) {
 				child.material = this.material
 			}
-		})
-
-		this.scene.resources.items.taskBackgrounds.scene.traverse((child) => {
-			if (child.name.includes('computer')) {
-				this.backgroundMesh = child
-				this.backgroundMesh.material = new MeshBasicMaterial({ color: 0x000000 })
-				this.backgroundMesh.visible = false
+			if (child.name === 'keys') {
+				this.keysMap = new Map(child.children.map((key) => [key.name, key]))
 			}
 		})
-
-		this.add(this.backgroundMesh)
 		this.add(this.mesh)
 
 		return this.mesh
