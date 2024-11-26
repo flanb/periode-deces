@@ -28,7 +28,7 @@ export default class Graph extends EventEmitter {
 		this.userGraph = [] // The user's graph based on key inputs
 		this.currentX = 0 // Track the current position in X
 		this.currentY = this._graphCanvas.height / 2 // Start drawing in the middle
-		this.score = 0 // score is not an actual score for now its just percentages 
+		this.score = 0 // score is not an actual score for now its just percentages
 		this.drawingSpeed = 2 // Constant horizontal drawing speed
 		this.isGameActive = false
 	}
@@ -94,7 +94,8 @@ export default class Graph extends EventEmitter {
 		this._joystickBottom = false
 		this._joystickTop = false
 
-		this.axis.off(`joystick:move:${this._side}`, this._updateJoystick.bind(this))
+		removeEventListener('keydown', this._handleKeyDown)
+		removeEventListener('keyup', this._handleKeyUp)
 	}
 
 	_createContext() {
@@ -274,7 +275,8 @@ export default class Graph extends EventEmitter {
 	// on event joystick up set up boolean to false
 	// then on update if event push up or down on graph then
 	_bindEvents() {
-		this.axis.on(`joystick:move:${this._side}`, this._updateJoystick.bind(this))
+		addEventListener('keydown', this._handleKeyDown)
+		addEventListener('keyup', this._handleKeyUp)
 
 		this._joystickInterval = window.setInterval(() => {
 			if (!this.isGameActive) return
@@ -303,6 +305,22 @@ export default class Graph extends EventEmitter {
 				this.end()
 			}
 		}, 100)
+	}
+
+	_handleKeyDown = (e) => {
+		if (e.key === 'ArrowUp') {
+			this._joystickTop = true
+		} else if (e.key === 'ArrowDown') {
+			this._joystickBottom = true
+		}
+	}
+
+	_handleKeyUp = (e) => {
+		if (e.key === 'ArrowUp') {
+			this._joystickTop = false
+		} else if (e.key === 'ArrowDown') {
+			this._joystickBottom = false
+		}
 	}
 
 	_updateJoystick(e) {

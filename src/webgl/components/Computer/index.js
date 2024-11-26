@@ -48,17 +48,43 @@ export default class Computer extends Component {
 			this._graphActivity.reset()
 			this.trigger('task:complete')
 			this.isPlaying = false
+			this.isShowed = false
 		})
 
 		this.sizes.on('resize', this.resize.bind(this))
+
+		this._createListeners()
+	}
+
+	_createListeners() {
+		this.experience.interactionManager.addInteractiveObject(this.mesh)
+		this.mesh.addEventListener('click', this._handleMouseClick)
+		this.mesh.addEventListener('mouseenter', this._handleMouseEnter)
+		this.mesh.addEventListener('mouseleave', this._handleMouseLeave)
+	}
+
+	_handleMouseClick = () => {
+		if (this.isShowed) {
+			this.playTask()
+		}
+	}
+
+	_handleMouseEnter = () => {
+		if (this.isShowed && !this.isPlaying) document.documentElement.style.cursor = 'pointer'
+	}
+
+	_handleMouseLeave = () => {
+		document.documentElement.style.cursor = ''
 	}
 
 	showTask() {
 		//TODO: Show random task
+		this.isShowed = true
 		this._graphActivity.showTask()
 	}
 
 	playTask(side) {
+		this.isShowed = false
 		this.isPlaying = true
 		this._graphActivity.playTask(side)
 	}
@@ -122,6 +148,11 @@ export default class Computer extends Component {
 
 	setScreenElement() {
 		const screen = document.querySelector('.computer-screen')
+
+		//handle mouse events
+		screen.addEventListener('mouseenter', this._handleMouseEnter)
+		screen.addEventListener('mouseleave', this._handleMouseLeave)
+		screen.addEventListener('click', this._handleMouseClick)
 
 		const cssObject = new CSS3DObject(screen)
 

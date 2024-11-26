@@ -118,7 +118,7 @@ export default class Phone extends Component {
 		this.experience.subtitlesManager.playSubtitle('client')
 		this.shakeAnim.pause()
 		this.calling.pause()
-		this.answerAnim.play()
+		this.answerAnim.play(0)
 		const handleDown = (event) => {
 			if (event.key === 'a') {
 				this.experience.subtitlesManager.next()
@@ -126,7 +126,7 @@ export default class Phone extends Component {
 		}
 		addEventListener('keydown', handleDown)
 		this.experience.subtitlesManager.on('finish', () => {
-			this.resetAnim.play()
+			this.resetAnim.play(0)
 			this.trigger('task:complete')
 			removeEventListener('keydown', handleDown)
 			this.isPlaying = false
