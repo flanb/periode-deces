@@ -1,7 +1,4 @@
-export function lerpAngle(from, to, factor, angleRange = 360) {
-	let num = (to - from) % angleRange
-	if (num > angleRange / 2) {
-		num -= angleRange
-	}
-	return from + num * factor
+export function lerpAngle(from, to, interpolation, angleRange = 360) {
+	const delta = ((to - from + angleRange / 2) % angleRange) - angleRange / 2
+	return from + delta * interpolation
 }

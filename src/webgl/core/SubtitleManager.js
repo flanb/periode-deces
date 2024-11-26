@@ -81,7 +81,7 @@ export class SubtitleManager extends EventEmitter {
 
 		const endQte = () => {
 			this._qteElement.style.opacity = '0'
-			this.experience.axis.off('down', handleDown)
+			removeEventListener('keydown', handleDown)
 			this.blockSubtitle = false
 		}
 
@@ -109,7 +109,7 @@ export class SubtitleManager extends EventEmitter {
 		}
 
 		requestAnimationFrame(() => {
-			this.experience.axis.on('down', handleDown)
+			addEventListener('keydown', handleDown)
 		})
 	}
 }

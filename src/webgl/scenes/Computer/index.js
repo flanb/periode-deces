@@ -3,7 +3,7 @@ import Cube from 'components/Cube/Cube.js'
 import Computer from 'components/Computer/index.js'
 import Resources from 'core/Resources.js'
 import sources from './sources.json'
-import Phone from '@/webgl/components/Phone/Phone'
+import Phone from '@/webgl/components/Phone'
 
 export default class Main {
 	constructor() {

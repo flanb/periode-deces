@@ -23,7 +23,6 @@ export default class Phone extends Component {
 		this.scene = this.experience.scene
 		this.camera = this.experience.camera.instance
 		this.resources = this.scene.resources
-		this.debug = this.experience.debug
 		this.axis = this.experience.axis
 		this.calling = new Audio('/audio/phone/calling.wav')
 		this.calling.loop = true
@@ -33,20 +32,20 @@ export default class Phone extends Component {
 		this.side = side
 		this.duration = duration
 
-		this._setMaterial()
-		this._setModel()
-		this._setDebug()
+		this._createMaterial()
+		this._createMesh()
+		this._createListeners()
 
 		this.targetRotation = 0
 	}
 
-	_setMaterial() {
+	_createMaterial() {
 		const texture = this.resources.items.bakeTexture
 		texture.channel = 1
 		this._material = new MeshBasicMaterial({ map: texture })
 	}
 
-	_setModel() {
+	_createMesh() {
 		this.mesh = this.resources.items.phoneModel.scene.clone()
 		this.mesh.name = 'phone'
 
@@ -77,10 +76,31 @@ export default class Phone extends Component {
 		this.add(this.mesh)
 	}
 
+	_createListeners() {
+		this.experience.interactionManager.addInteractiveObject(this.mesh)
+		this.mesh.addEventListener('click', this._handleMouseClick)
+		this.mesh.addEventListener('mouseenter', this._handleMouseEnter)
+		this.mesh.addEventListener('mouseleave', this._handleMouseLeave)
+	}
+
+	_handleMouseClick = () => {
+		if (!this.isShowed || this.isPlaying) return
+		this.playTask()
+	}
+
+	_handleMouseEnter = () => {
+		if (this.isShowed && !this.isPlaying) this.experience.canvas.style.cursor = 'pointer'
+	}
+
+	_handleMouseLeave = () => {
+		this.experience.canvas.style.cursor = ''
+	}
+
 	/**
 	 * Activate the CTA of the call (ringing)
 	 */
 	showTask() {
+		this.isShowed = true
 		this.shakeAnim.play()
 		this.calling.volume = CALL.VOLUMES.CALLING
 		this.calling.play()
@@ -93,17 +113,7 @@ export default class Phone extends Component {
 		// }, this.duration * 1000)
 	}
 
-	/**
-	 * Deactivate the CTA of the call (ringing)
-	 */
-	ratio() {
-		this.answerAnim.reverse()
-	}
-
-	/**
-	 * @param {'left' | 'right'} side
-	 */
-	playTask(side = 'left') {
+	playTask() {
 		this.isPlaying = true
 		this.experience.subtitlesManager.playSubtitle('client')
 		this.shakeAnim.pause()
@@ -114,16 +124,18 @@ export default class Phone extends Component {
 				this.experience.subtitlesManager.next()
 			}
 		}
-		this.axis.on(`down:${side}`, handleDown)
+		addEventListener('keydown', handleDown)
 		this.experience.subtitlesManager.on('finish', () => {
-			this.answerAnim.reverse()
+			this.resetAnim.play()
 			this.trigger('task:complete')
-			this.axis.off(`down:${side}`, handleDown)
+			removeEventListener('keydown', handleDown)
 			this.isPlaying = false
+			this.isShowed = false
 		})
 	}
 
 	_handlePlayTask(e) {
+		return
 		if (e.key !== 'a') return
 		this.axis.off('down:' + this.side, this._handlePlayTask)
 		gsap.to(this.calling, { volume: 0, duration: 0.25, onComplete: () => this.calling.pause() })
@@ -162,7 +174,7 @@ export default class Phone extends Component {
 					z: (Math.PI / 2) * sideF,
 					ease: 'power2.inOut',
 				},
-				0,
+				0
 			)
 			.to(
 				this.telModel.position,
@@ -173,7 +185,7 @@ export default class Phone extends Component {
 					z: this.camera.position.z,
 					ease: 'power2.inOut',
 				},
-				0,
+				0
 			)
 	}
 
@@ -191,7 +203,7 @@ export default class Phone extends Component {
 				z: this.telModel.rotation.z - 0.05,
 				ease: 'bounce.out',
 			},
-			0,
+			0
 		)
 
 		this.shakeAnim.to(
@@ -201,7 +213,7 @@ export default class Phone extends Component {
 				y: this.telModel.position.y + 0.1,
 				ease: 'bounce.out',
 			},
-			0,
+			0
 		)
 	}
 
@@ -218,7 +230,7 @@ export default class Phone extends Component {
 					z: this.baseTalValues.rotation.z,
 					ease: 'power2.inOut',
 				},
-				0,
+				0
 			)
 			.to(
 				this.telModel.position,
@@ -232,11 +244,7 @@ export default class Phone extends Component {
 						this.closeCall.play()
 					},
 				},
-				0,
+				0
 			)
-	}
-
-	_setDebug() {
-		// const debugFolder = addObjectDebug(this.debug.ui, this.model)
 	}
 }

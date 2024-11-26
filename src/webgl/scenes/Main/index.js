@@ -5,7 +5,7 @@ import Fan from 'components/Fan.js'
 import Computer from 'components/Computer/index.js'
 import { BackSide, Color, MeshBasicMaterial } from 'three'
 import Background from 'components/Background.js'
-import Phone from 'components/Phone/Phone.js'
+import Phone from 'components/Phone.js'
 import Desk from 'components/Desk.js'
 import Head from 'components/Head.js'
 import gsap from 'gsap'
@@ -70,7 +70,7 @@ export default class Main {
 
 		this.phone = new Phone()
 		this.scene.add(this.phone)
-		// this.tasks.push(this.phone)
+		this.tasks.push(this.phone)
 	}
 
 	_randomTasks(timeout = 5000) {

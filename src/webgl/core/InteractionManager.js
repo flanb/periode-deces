@@ -69,19 +69,22 @@ export default class InteractionManager {
 
 	update() {
 		if (!this.needsUpdate || !this.interactiveObjects.length) return
-		this.raycaster.setFromCamera(this.pointer, this.camera)
+		this.intersectsObjects = []
 
+		this.raycaster.setFromCamera(this.pointer, this.camera)
 		const intersects = this.raycaster.intersectObjects(this.interactiveObjects)
-		this.intersectsObjects = intersects.map((intersect) => intersect.object)
 
 		intersects.forEach((intersect) => {
 			const object = this.interactiveObjects.find(
 				(obj) => obj.children.includes(intersect.object) || obj === intersect.object
 			)
-			if (object && !object.isHovered) {
-				object.dispatchEvent({ type: 'mouseover' })
-				object.dispatchEvent({ type: 'mouseenter' })
-				object.isHovered = true
+			if (object && !this.intersectsObjects.includes(object)) {
+				this.intersectsObjects.push(object)
+				if (!object.isHovered) {
+					object.dispatchEvent({ type: 'mouseover' })
+					object.dispatchEvent({ type: 'mouseenter' })
+					object.isHovered = true
+				}
 			}
 		})
 
@@ -92,6 +95,7 @@ export default class InteractionManager {
 				object.isHovered = false
 			}
 		})
+
 		this.previousHoveredObjects = this.intersectsObjects
 		this.needsUpdate = false
 	}
