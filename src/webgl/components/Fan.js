@@ -8,7 +8,6 @@ const SETTINGS = {
 	TURNS: 4,
 }
 
-let helixDirection = 0
 export default class Fan extends Component {
 	constructor() {
 		super()
@@ -19,7 +18,9 @@ export default class Fan extends Component {
 		this._createMaterial()
 		this._createMesh()
 
-		this.targetRotation = 0
+		this._helixDirection = 0
+		this._targetRotation = 0
+		this.score = 2
 		this._createListeners()
 	}
 
@@ -32,8 +33,8 @@ export default class Fan extends Component {
 	}
 
 	_createMesh() {
-		this.mesh = this.scene.resources.items.fanModel.scene.children[0].clone()
-		this.mesh.traverse((child) => {
+		this._mesh = this.scene.resources.items.fanModel.scene.children[0].clone()
+		this._mesh.traverse((child) => {
 			if (child.isMesh) {
 				child.material = this._material
 				// child.material.depthTest = false
@@ -47,10 +48,9 @@ export default class Fan extends Component {
 				}
 			}
 		})
-		this.mesh.name = 'fan'
+		this._mesh.name = 'fan'
 
-		this.add(this.mesh)
-		// addObjectDebug(this.debug.ui, this.mesh)
+		this.add(this._mesh)
 	}
 
 	_handleHelixMouseEnter = () => {
@@ -73,27 +73,27 @@ export default class Fan extends Component {
 		const deltaY = event.mouseEvent.movementY
 		const angleDelta = Math.abs(deltaX) * 0.015 + Math.abs(deltaY) * 0.015
 
-		if (deltaX < 0 && helixDirection === 0) {
-			helixDirection = -1
+		if (deltaX < 0 && this._helixDirection === 0) {
+			this._helixDirection = -1
 		}
-		if (deltaX > 0 && helixDirection === 0) {
-			helixDirection = 1
+		if (deltaX > 0 && this._helixDirection === 0) {
+			this._helixDirection = 1
 		}
-		this.targetRotation += angleDelta * helixDirection
+		this._targetRotation += angleDelta * this._helixDirection
 
-		if (Math.abs(this.targetRotation) > Math.PI * 2 * SETTINGS.TURNS) {
+		if (Math.abs(this._targetRotation) > Math.PI * 2 * SETTINGS.TURNS) {
 			this.showTaskTl?.kill()
 			this.witness.material.color.set(0xffffff)
 			this.isPlaying = false
 			this.isShowed = false
-			helixDirection = 0
+			this._helixDirection = 0
 
 			setTimeout(() => {
-				this.targetRotation %= Math.PI * 2
-				this.helix.rotation.x = -this.targetRotation
+				this._targetRotation %= Math.PI * 2
+				this.helix.rotation.x = -this._targetRotation
 			}, 1000)
 
-			this.trigger('task:complete')
+			this.trigger('task:complete', [this.score])
 		}
 	}
 
@@ -121,8 +121,7 @@ export default class Fan extends Component {
 	}
 
 	update() {
-		this.helix.rotation.x = lerp(this.helix.rotation.x, -this.targetRotation, 0.01 * this.experience.time.delta)
-		// console.log(this.helix.rotation.x)
+		this.helix.rotation.x = lerp(this.helix.rotation.x, -this._targetRotation, 0.01 * this.experience.time.delta)
 	}
 
 	dispose() {

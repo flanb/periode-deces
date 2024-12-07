@@ -23,9 +23,9 @@ export default class Computer extends Component {
 		this.screenElement = this.setScreenElement()
 		this.screenBounds = this.setScreenBounds()
 
-		this.setMaterial()
-		this.setMesh()
-		this.setDebug()
+		this._createMaterial()
+		this._createMesh()
+		this._createDebug()
 
 		this.tempPosition = new Vector3()
 
@@ -34,7 +34,7 @@ export default class Computer extends Component {
 		this._graphActivity.on('end', () => {
 			this._graphActivity.hide()
 			this._graphActivity.reset()
-			this.trigger('task:complete')
+			this.trigger('task:complete', [this._graphActivity.score])
 			this.isPlaying = false
 			this.isShowed = false
 		})
@@ -71,7 +71,7 @@ export default class Computer extends Component {
 		if (key) {
 			gsap.to(key.position, {
 				duration: 0.1,
-				y: 0.01,
+				y: 0,
 			})
 		}
 	}
@@ -102,7 +102,7 @@ export default class Computer extends Component {
 		this._graphActivity.playTask(side)
 	}
 
-	setMaterial() {
+	_createMaterial() {
 		// this.material = new ShaderMaterial({
 		// 	fragmentShader,
 		// 	vertexShader,
@@ -119,7 +119,7 @@ export default class Computer extends Component {
 		})
 	}
 
-	setMesh() {
+	_createMesh() {
 		this.mesh = this.resources.items.computerModel.scene.clone()
 
 		this.mesh.traverse((child) => {
@@ -197,7 +197,7 @@ export default class Computer extends Component {
 		this.css3dRenderer.render(this.css3dScene, this.camera.instance)
 	}
 
-	setDebug() {
+	_createDebug() {
 		if (this.debug.active) {
 			addObjectDebug(this.debug.ui, this.screenPoint, { title: 'Cube' })
 		}

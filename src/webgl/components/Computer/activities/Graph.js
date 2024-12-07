@@ -13,6 +13,8 @@ export default class Graph extends EventEmitter {
 		this.resources = this.scene.resources
 		this.axis = this.experience.axis
 
+		this.score = 10
+
 		this._element = document.body.querySelector('.graph')
 		this._notification = this._element.querySelector('.notification')
 		this._activity = this._element.querySelector('.activity')
@@ -28,7 +30,7 @@ export default class Graph extends EventEmitter {
 		this.userGraph = [] // The user's graph based on key inputs
 		this.currentX = 0 // Track the current position in X
 		this.currentY = this._graphCanvas.height / 2 // Start drawing in the middle
-		this.score = 0 // score is not an actual score for now its just percentages
+		this.graphScore = 0 // score is not an actual score for now its just percentages
 		this.drawingSpeed = 2 // Constant horizontal drawing speed
 		this.isGameActive = false
 	}
@@ -87,7 +89,7 @@ export default class Graph extends EventEmitter {
 		this.userGraph = []
 		this.currentX = 0
 		this.currentY = this._graphCanvas.height / 2
-		this.score = 0
+		this.graphScore = 0
 
 		this._joystickInterval && clearInterval(this._joystickInterval)
 		this._joystickInterval = null
@@ -124,11 +126,8 @@ export default class Graph extends EventEmitter {
 		let graph = []
 		const maxChanges = 10 // Maximum number of direction changes
 		let changes = 0 // Track the number of direction changes
-		let direction = 1 // Start with an upward direction
 		let lastY = this._displayHeight * 0.75 // Start 3/4 down the canvas
 		let lastX = 0 // Start 3/4 down the canvas
-
-		const stepX = this._displayWidth / 10 // Step X-axis increment (adjustable)
 
 		for (let i = 0; i <= changes; i++) {
 			// Make sure Y stays within bounds (0 <= Y <= canvas height)
@@ -140,7 +139,6 @@ export default class Graph extends EventEmitter {
 
 			// Randomly change direction (but limit changes)
 			if (Math.random() < 0.1 && changes < maxChanges) {
-				direction *= -1 // Flip the direction
 				changes++
 			}
 
@@ -268,8 +266,8 @@ export default class Graph extends EventEmitter {
 
 	_calculateScore() {
 		// Update the score display
-		this._scoreNumber.innerHTML = `${this.score.toFixed(0)}%`
-		this._scoreNumber.style.backgroundColor = this.score >= 0 ? 'green' : 'red'
+		this._scoreNumber.innerHTML = `${this.graphScore.toFixed(0)}%`
+		this._scoreNumber.style.backgroundColor = this.graphScore >= 0 ? 'green' : 'red'
 	}
 
 	// on event joystick up set up boolean to false
@@ -283,16 +281,16 @@ export default class Graph extends EventEmitter {
 			const step = 5 // How much the line moves vertically per arrow key press
 			if (this._joystickBottom) {
 				this.currentY = Math.max(0, this.currentY + step) // Move up
-				if (this.score > 0) this.score = 0
-				this.score -= 1
+				if (this.graphScore > 0) this.graphScore = 0
+				this.graphScore -= 1
 				this._calculateScore() // Update score for ArrowUp
 
 				this.currentX += this.drawingSpeed // Move horizontally at a constant speed
 				this.userGraph.push({ x: this.currentX, y: this.currentY })
 			} else if (this._joystickTop) {
 				this.currentY = Math.min(this._graphCanvas.height, this.currentY - step) // Move down
-				if (this.score < 0) this.score = 0
-				this.score += 1
+				if (this.graphScore < 0) this.graphScore = 0
+				this.graphScore += 1
 				this._calculateScore() // Update score for ArrowUp
 
 				this.currentX += this.drawingSpeed // Move horizontally at a constant speed

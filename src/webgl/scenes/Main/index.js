@@ -3,7 +3,6 @@ import Resources from 'core/Resources.js'
 import sources from './sources.json'
 import Fan from 'components/Fan.js'
 import Computer from 'components/Computer/index.js'
-import { BackSide, Color, MeshBasicMaterial } from 'three'
 import Background from 'components/Background.js'
 import Phone from 'components/Phone.js'
 import Desk from 'components/Desk.js'
@@ -34,6 +33,22 @@ export default class Main {
 
 		this._createSceneComponents()
 		this._randomTasks()
+		this._createScore()
+	}
+
+	_createScore() {
+		const scoreElement = document.querySelector('.score')
+		this._score = 0
+		scoreElement.textContent = this._score
+
+		const handleComplete = (score) => {
+			this._score += score
+			scoreElement.textContent = this._score
+		}
+
+		this.tasks.forEach((task) => {
+			task.on('task:complete', handleComplete)
+		})
 	}
 
 	_reset() {
@@ -94,15 +109,10 @@ export default class Main {
 			const randomIndex = Math.floor(Math.random() * this.focusTasks.length)
 			randomTask = this.focusTasks[randomIndex]
 			randomTask.playTask()
-			this.leftSelectionMode = false
-			this.rightSelectionMode = false
-			randomTask.on('task:complete', handleComplete)
 		}
 
 		const handleComplete = () => {
 			setTimeout(repeat, timeout)
-			this.leftSelectionMode = true
-			this.rightSelectionMode = true
 			randomTask.off('task:complete', handleComplete)
 		}
 		setTimeout(repeat, timeout)
@@ -148,7 +158,6 @@ export default class Main {
 
 	update() {
 		if (this.fan) this.fan.update()
-		// if (this.phone) this.phone.update()
 		if (this.computer) this.computer.update()
 	}
 }
