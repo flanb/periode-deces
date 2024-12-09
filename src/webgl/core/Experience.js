@@ -7,7 +7,7 @@ import SceneManager from 'core/SceneManager.js'
 import { Mesh, Scene } from 'three'
 import InteractionManager from 'core/InteractionManager.js'
 import AxisManager from './AxisManager.js'
-import { SubtitleManager } from 'core/SubtitleManager.js'
+import { SubtitlesManager } from '@/webgl/core/SubtitlesManager.js'
 
 let instance = null
 
@@ -28,6 +28,7 @@ export default class Experience {
 		// Setup
 		this.time = new Time()
 		this.scene = new Scene()
+		this.cssScene = new Scene()
 		this.debug = new Debug()
 		this.sizes = new Sizes()
 		this.camera = new Camera()
@@ -35,7 +36,7 @@ export default class Experience {
 		this.axis = new AxisManager()
 		this.activeScene = new SceneManager()
 		this.renderer = new Renderer()
-		this.subtitlesManager = new SubtitleManager()
+		this.subtitlesManager = new SubtitlesManager()
 
 		// Resize event
 		this.sizes.on('resize', () => {

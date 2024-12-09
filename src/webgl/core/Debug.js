@@ -189,7 +189,8 @@ export default class Debug {
 		`
 		document.head.appendChild(styleElement)
 
-		resetButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9C9 3 7 4 5 6L3 8m0 0V3m0 5h5m-5 4a9 9 0 0 0 9 9c3 0 5-1 7-3l2-2m0 0h-5m5 0v5"/></svg>`
+		resetButton.innerHTML =
+			'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9C9 3 7 4 5 6L3 8m0 0V3m0 5h5m-5 4a9 9 0 0 0 9 9c3 0 5-1 7-3l2-2m0 0h-5m5 0v5"/></svg>'
 
 		this.ui.pool_.createBindingApi = (function (original) {
 			return function (bindingController) {
@@ -246,9 +247,7 @@ export default class Debug {
 				sessionStorage.setItem('debugParams', JSON.stringify(this.debugParams))
 				if (value) {
 					if (this[`set${key}`]) this[`set${key}`]()
-				} else {
-					if (this[`unset${key}`]) this[`unset${key}`]()
-				}
+				} else if (this[`unset${key}`]) this[`unset${key}`]()
 			})
 		})
 	}

@@ -2,6 +2,7 @@ import Experience from 'core/Experience.js'
 import { gsap } from 'gsap'
 import { MeshBasicMaterial, Vector2 } from 'three'
 import Component from 'core/Component.js'
+import Bubble from './Bubble'
 
 export default class Phone extends Component {
 	constructor() {
@@ -11,6 +12,7 @@ export default class Phone extends Component {
 		this.scene = this.experience.scene
 		this.camera = this.experience.camera.instance
 		this.resources = this.scene.resources
+		this.score = 10
 		this.calling = new Audio('/audio/phone/calling.wav')
 		this.calling.loop = true
 		this.talking = new Audio('/audio/phone/talking.mp3')
@@ -20,8 +22,7 @@ export default class Phone extends Component {
 		this._createMaterial()
 		this._createMesh()
 		this._createListeners()
-
-		this.score = 10
+		this._bubble = new Bubble({ bindObject: this._baseModel, htmlElement: document.querySelector('.bubble') })
 	}
 
 	_createMaterial() {
@@ -36,20 +37,27 @@ export default class Phone extends Component {
 		this._mesh.traverse((child) => {
 			if (child.isMesh) {
 				child.material = this._material
+
+				if (child.name === 'tel') {
+					this._telModel = child
+				} else if (child.name === 'base') {
+					this._baseModel = child
+				}
 			}
 		})
 
-		this._telModel = this._mesh.children.find(({ name }) => name === 'tel')
 		this._baseTelValues = {
 			rotation: this._telModel.rotation.clone(),
 			position: this._telModel.position.clone(),
 		}
 		this._createShakeAnim()
-		this._setAnswerAnim()
+		this._createAnswerAnim()
 		this._createResetAnim()
 
 		this.add(this._mesh)
 	}
+
+	_angryBubbleAnim() {}
 
 	_createListeners() {
 		this.experience.interactionManager.addInteractiveObject(this._mesh)
@@ -83,10 +91,11 @@ export default class Phone extends Component {
 
 	playTask() {
 		this.isPlaying = true
-		this.experience.subtitlesManager.playSubtitle('client')
 		this._shakeAnim.pause()
 		this.calling.pause()
 		this._answerAnim.play(0)
+		this._bubble.display()
+		this.experience.subtitlesManager.playSubtitle('client')
 		const handleDown = (event) => {
 			if (event.key === 'a') {
 				this.experience.subtitlesManager.next()
@@ -94,6 +103,7 @@ export default class Phone extends Component {
 		}
 		addEventListener('keydown', handleDown)
 		this.experience.subtitlesManager.on('finish', () => {
+			this._bubble.hide()
 			this._resetAnim.play(0)
 			this.trigger('task:complete', [this.score])
 			removeEventListener('keydown', handleDown)
@@ -102,8 +112,8 @@ export default class Phone extends Component {
 		})
 	}
 
-	_setAnswerAnim() {
-		const duration = 1.25
+	_createAnswerAnim() {
+		const duration = 0.5
 
 		const target = new Vector2()
 		this.camera.getViewSize(1, target) // result written to target
@@ -117,7 +127,7 @@ export default class Phone extends Component {
 					duration,
 					x: -Math.PI / 2,
 					z: Math.PI / 2,
-					ease: 'power2.inOut',
+					ease: 'steps(10)',
 				},
 				0
 			)
@@ -128,7 +138,7 @@ export default class Phone extends Component {
 					x: this.camera.position.x - dist,
 					y: this.camera.position.y,
 					z: this.camera.position.z,
-					ease: 'power2.inOut',
+					ease: 'steps(10)',
 				},
 				0
 			)
@@ -163,7 +173,7 @@ export default class Phone extends Component {
 	}
 
 	_createResetAnim() {
-		const duration = 1.25
+		const duration = 0.5
 		this._resetAnim = gsap
 			.timeline({ paused: true })
 			.to(
@@ -173,7 +183,7 @@ export default class Phone extends Component {
 					x: this._baseTelValues.rotation.x,
 					y: this._baseTelValues.rotation.y,
 					z: this._baseTelValues.rotation.z,
-					ease: 'power2.inOut',
+					ease: 'steps(10)',
 				},
 				0
 			)
@@ -184,7 +194,7 @@ export default class Phone extends Component {
 					x: this._baseTelValues.position.x,
 					y: this._baseTelValues.position.y,
 					z: this._baseTelValues.position.z,
-					ease: 'power2.inOut',
+					ease: 'steps(10)',
 					onComplete: () => {
 						this.closeCall.play()
 					},

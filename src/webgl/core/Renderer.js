@@ -1,7 +1,8 @@
 import Experience from 'core/Experience.js'
-import { CustomToneMapping, NoToneMapping, ShaderChunk, WebGLRenderer } from 'three'
+import { CustomToneMapping, ShaderChunk, WebGLRenderer } from 'three'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer'
 
 const DOWN_SCALE = 2
 
@@ -11,9 +12,11 @@ export default class Renderer {
 		this.canvas = this.experience.canvas
 		this.sizes = this.experience.sizes
 		this.scene = this.experience.scene
+		this.cssScene = this.experience.cssScene
 		this.camera = this.experience.camera
 
 		this._createInstance()
+		this._createCssInstance()
 		this._createToneMapping()
 		// this._createPostprocessing()
 	}
@@ -30,6 +33,15 @@ export default class Renderer {
 		this.instance.setClearColor('#211d20')
 		this.instance.setSize(this.sizes.width / DOWN_SCALE, this.sizes.height / DOWN_SCALE)
 		this.instance.setPixelRatio(Math.min(this.sizes.pixelRatio, 2))
+	}
+
+	_createCssInstance() {
+		this.cssInstance = new CSS3DRenderer()
+		this.cssInstance.setSize(this.experience.sizes.width, this.experience.sizes.height)
+		this.cssInstance.domElement.style.position = 'fixed'
+		this.cssInstance.domElement.style.top = 0
+		this.cssInstance.domElement.style.pointerEvents = 'none'
+		document.body.appendChild(this.cssInstance.domElement)
 	}
 
 	_createToneMapping() {
@@ -74,5 +86,6 @@ export default class Renderer {
 	update() {
 		// this._composer.render()
 		this.instance.render(this.scene, this.camera.instance)
+		this.cssInstance.render(this.cssScene, this.camera.instance)
 	}
 }

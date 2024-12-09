@@ -16,8 +16,8 @@ export default class Computer extends Component {
 		this.resources = this.scene.resources
 		this.sizes = this.experience.sizes
 
-		this.css3dRenderer = this.setCss3dRenderer()
-		this.css3dScene = this.setCss3dScene()
+		this.css3dRenderer = this.experience.renderer.cssInstance
+		this.css3dScene = this.experience.cssScene
 
 		this.screenPoint = this.setScreenPoint()
 		this.screenElement = this.setScreenElement()
@@ -59,20 +59,14 @@ export default class Computer extends Component {
 
 		const key = this.keysMap.get(event.code)
 		if (key) {
-			gsap.to(key.position, {
-				duration: 0.1,
-				y: -0.01,
-			})
+			key.position.y = -0.01
 		}
 	}
 
 	_handleKeyUp = (event) => {
 		const key = this.keysMap.get(event.code)
 		if (key) {
-			gsap.to(key.position, {
-				duration: 0.1,
-				y: 0,
-			})
+			key.position.y = 0
 		}
 	}
 
@@ -135,23 +129,6 @@ export default class Computer extends Component {
 		return this.mesh
 	}
 
-	setCss3dRenderer() {
-		const renderer = new CSS3DRenderer()
-		renderer.setSize(this.experience.sizes.width, this.experience.sizes.height)
-		renderer.domElement.style.position = 'absolute'
-		renderer.domElement.style.top = 0
-		renderer.domElement.style.pointerEvents = 'none'
-		document.body.appendChild(renderer.domElement)
-
-		return renderer
-	}
-
-	setCss3dScene() {
-		const scene = new Scene()
-
-		return scene
-	}
-
 	setScreenElement() {
 		const screen = document.querySelector('.computer-screen')
 
@@ -193,9 +170,7 @@ export default class Computer extends Component {
 		return screenPoint
 	}
 
-	update() {
-		this.css3dRenderer.render(this.css3dScene, this.camera.instance)
-	}
+	update() {}
 
 	_createDebug() {
 		if (this.debug.active) {
